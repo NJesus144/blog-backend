@@ -8,25 +8,23 @@ import {
   addCommentService,
   deleteCommentService,
   editCommentPostService,
-  eraseService
+  eraseService,
+  countPost
    } from "../services/post.service.js";
 
 const create = async (req, res) => {
   try {
-    const { title, subtitle, exercise, banner, imgPreview, sections, category  } = req.body;
-
-    if (!title || !banner || !imgPreview || !category) {
+    const { title, description,  banner,  text  } = req.body;
+    console.log(title,description, text, banner )
+    if (!title || !banner || !text || !description) {
       res.status(400).send({ message: "submit all fields" });
     }
 
     await createService({
       title,
-      subtitle,
-      imgPreview,
+      description,
+      text,
       banner,
-      exercise,
-      sections,
-      category,
       user: req.userId,
     });
 
@@ -47,14 +45,12 @@ const findById = async (req, res) => {
      
         id: post._id,
         title: post.title,
-        subtitle: post.subtitle,
-        banner: post.banner,
-        exercise: post.exercise,
-        imgPreview: post.imgPreview,
-        sections: post.sections,
-        category: post.category,
+        description: post.description,
+        text: post.text,
+        banner: post.banner,   
         comments: post.comments,
-        createdAt: post.createdAt
+        createdAt: post.createdAt,
+        user: req.userId,
  
     })
 
@@ -71,12 +67,20 @@ const findAll = async (req, res) => {
     offset = Number(offset)
     
     if(!limit){
-      limit = 5;
+      limit = 6;
     }
     if(!offset) {
       offset = 0;
     }
     const post = await findAllService(offset, limit);
+    const total = await countPost(); 
+    const currentUrl = req.baseUrl;
+  
+    const next = offset + limit;
+    const nextUrl = next < total ? `${currentUrl}?limit=${limit}&offset=${next}` : null;
+
+    const previous = offset - limit < 0 ? null : offset - limit;
+    const previousUrl = previous != null ? `${currentUrl}?limit=${limit}&offset=${previous}`: null;
 
 
     if (post.length === 0) {
@@ -84,7 +88,27 @@ const findAll = async (req, res) => {
         message: "There are no registered post",
       });
     } 
-    res.send(post);
+    console.log(post)
+    res.send({
+      nextUrl,
+      previousUrl,
+      limit,
+      offset,
+      total,
+
+      results: post.map(item => ({
+        id: item._id,
+        title: item.title,
+        subtitle: item.subtitle,
+        imgPreview: item.imgPreview,
+        banner: item.banner,
+        sections: item.sections,
+        comments: item.comments,
+        category: item.category,
+        name: item.user.name,
+        username: item.user.username,
+      }))
+    });
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -103,11 +127,10 @@ const topNews = async (req, res) => {
           news: {
               id: news._id,
               title: news.title,
-              text: news.text,
-              imgPreview: news.imgPreview,
+              description: news.description,
+              text: news.text,          
               banner: news.banner,
-              comments: news.comments,
-              category: news.category,
+              comments: news.comments,          
               name: news.user.name,
               username: news.user.username
           },
@@ -148,7 +171,7 @@ const addComment = async (req, res) => {
 
     await addCommentService(id, comment, userId)
 
-    res.send({ message: "Comment successfully completed!"})
+    res.status(201).send({ message: "Comment successfully completed!"})
   }catch(err){
     res.status(500).send({ message: err.message })
   }

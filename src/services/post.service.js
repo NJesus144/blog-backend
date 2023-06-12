@@ -5,6 +5,7 @@ const createService = (body) => News.create(body);
 const findByIdService = (id) => News.findById(id)
 
 const findAllService = (offset, limit) => News.find().sort({_id: -1}).skip(offset).limit(limit).populate("user");
+const countPost = () => News.countDocuments()
 
 const findAllCategoryService = (category) => News.find({category: category})
 
@@ -52,5 +53,6 @@ export { createService,
   addCommentService,
   deleteCommentService,
   eraseService,
-  editCommentPostService
+  editCommentPostService,
+  countPost,
  };

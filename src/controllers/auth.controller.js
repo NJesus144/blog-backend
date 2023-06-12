@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
  import { generateToken } from "../services/login.service.js";
 
  const auth = (req, res) => {
-  const SECRET_JWT = "df6923b8c84dd6e81142fac5423e418d";
+  const SECRET_JWT = process.env.SECRET_JWT;
    const { authorization } = req.headers;
-
+  console.log(authorization)
     if (!authorization) return res.sendStatus(401);
 
     const parts = authorization.split(" ");
@@ -28,7 +28,7 @@ import jwt from "jsonwebtoken";
         return res.status(401).send({ message: "invalid token!" });
 
        const token = generateToken(user.id)
-      return res.send({status_Token: true, token})  
+      return res.send({status_token: true, token})  
      }catch(error){
       res.status(500).send({ message: err.message });  
      }
