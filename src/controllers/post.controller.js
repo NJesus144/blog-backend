@@ -15,7 +15,6 @@ import {
 const create = async (req, res) => {
   try {
     const { title, description,  banner,  text  } = req.body;
-    console.log(title,description, text, banner )
     if (!title || !banner || !text || !description) {
       res.status(400).send({ message: "submit all fields" });
     }
@@ -24,7 +23,7 @@ const create = async (req, res) => {
       title,
       description,
       text,
-      banner,
+      banner,    
       user: req.userId,
     });
 
@@ -50,6 +49,8 @@ const findById = async (req, res) => {
         banner: post.banner,   
         comments: post.comments,
         createdAt: post.createdAt,
+        username: post.user.username,
+        name: post.user.name,
         user: req.userId,
  
     })
@@ -88,7 +89,6 @@ const findAll = async (req, res) => {
         message: "There are no registered post",
       });
     } 
-    console.log(post)
     res.send({
       nextUrl,
       previousUrl,
@@ -99,12 +99,11 @@ const findAll = async (req, res) => {
       results: post.map(item => ({
         id: item._id,
         title: item.title,
-        subtitle: item.subtitle,
-        imgPreview: item.imgPreview,
-        banner: item.banner,
-        sections: item.sections,
+        description: item.description,      
+        banner: item.banner,     
         comments: item.comments,
         category: item.category,
+        createdAt: item.createdAt,
         name: item.user.name,
         username: item.user.username,
       }))
@@ -132,6 +131,7 @@ const topNews = async (req, res) => {
               banner: news.banner,
               comments: news.comments,          
               name: news.user.name,
+              createdAt: news.createdAt,
               username: news.user.username
           },
       });
