@@ -3,11 +3,9 @@ import { loginService, generateToken } from "../services/login.service.js";
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password)
+
   try {
     const user = await loginService(email);
-
-    console.log("usuario encontrado =>", user)
 
     if (!user) {
       return res

@@ -51,7 +51,7 @@ const findById = async (req, res) => {
         createdAt: post.createdAt,
         username: post.user.username,
         name: post.user.name,
-        user: req.userId,
+        user: post.user._id,
  
     })
 
@@ -105,6 +105,7 @@ const findAll = async (req, res) => {
         category: item.category,
         createdAt: item.createdAt,
         name: item.user.name,
+        idUser: item.user._id,  
         username: item.user.username,
       }))
     });
@@ -131,6 +132,7 @@ const topNews = async (req, res) => {
               banner: news.banner,
               comments: news.comments,          
               name: news.user.name,
+              idUser: news.user._id,           
               createdAt: news.createdAt,
               username: news.user.username
           },
@@ -162,7 +164,7 @@ const findAllCategory = async (req, res) => {
 const addComment = async (req, res) => {
   try{
     const {id} = req.params;
-    const userId = req.userId;
+     const userId = req.userId;
     const {comment} = req.body;
 
     if(!comment) {
@@ -170,6 +172,7 @@ const addComment = async (req, res) => {
     }
 
     await addCommentService(id, comment, userId)
+
 
     res.status(201).send({ message: "Comment successfully completed!"})
   }catch(err){
@@ -180,8 +183,8 @@ const addComment = async (req, res) => {
 const deleteComment = async(req, res) => {
   try{
     const {idPost, idComment } = req.params;
-    const userId = req.userId;
-  
+     const userId = req.userId;
+
     const commentDeleted = await deleteCommentService(idPost, idComment, userId )
   
     const commentFinder = commentDeleted.comments.find(
@@ -204,7 +207,6 @@ const editComment = async(req, res) => {
   try{
     const {idPost, idComment } = req.params;
     const {comment} = req.body;
-
 
     if(!comment) {
       return res.status(400).send({ message: "Write a message to comment" })

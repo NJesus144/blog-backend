@@ -4,7 +4,6 @@ import { findByIdService } from "../services/user.service.js";
 export const authMiddleware = (req, res, next) => {
   try {
     const { authorization } = req.headers;
-    
     if (!authorization) return res.sendStatus(401);
 
     const parts = authorization.split(" ");
@@ -19,7 +18,7 @@ export const authMiddleware = (req, res, next) => {
       if (error) return res.status(401).send({ message: "Token invalid!" });
 
       const user = await findByIdService(decoded.id);
-
+    
       if (!user || !user.id)
         return res.status(401).send({ message: "invalid token!" });
 

@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
  const auth = (req, res) => {
   const SECRET_JWT = process.env.SECRET_JWT;
    const { authorization } = req.headers;
-  console.log(authorization)
+
     if (!authorization) return res.sendStatus(401);
 
     const parts = authorization.split(" ");
